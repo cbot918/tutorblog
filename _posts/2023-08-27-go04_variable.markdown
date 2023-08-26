@@ -1,0 +1,170 @@
+---
+layout: post
+title:  (教學) go04_variable
+date:   2023-08-27 00:45:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+此篇教變數(variable)的觀念及語法
+
+## 解決問題
+使用變數及了解變數
+
+## 小提醒
+此為寫程式的基本觀念
+
+## 筆者環境
+1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
+2. IDE: VScode
+3. 語言: Golang / js
+
+## Getting Started
+
+### 1. 目前的 main.go 程式碼
+```go
+package main
+
+import (
+  "fmt"
+  "helloworld/pkg" // helloworld 是 mod.go 裡面的專案名稱, 後面pkg就是資料夾路徑
+)
+
+func adder(a int, b int) int {
+  return a + b
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  fmt.Println( adder(3, 5) )
+  fmt.Println( pkg.Sub(10, 6)) // 這邊就需要使用 pkg這個物件去呼叫Sub函式(至於什麼是物件後面詳述)
+}
+```
+
+### 2. 使用變數
+翻修 main.go
+```go
+package main
+
+import (
+  "fmt"
+  "helloworld/pkg" 
+)
+
+func main(){
+
+  // fmt.Println( pkg.Sub(10, 6)) 
+  
+  a := "hello" // 最簡單的宣告方式, := 的功能是類型推導, 不用告訴編譯器a是什麼類型, 他會依據 := 右邊的資料, 自己判斷是什麼類型, 偷懶方便
+  
+  var b string // 先宣告變數 b , var是關鍵字, 英文全稱是 variable 變數的意思
+  b = "world"  // 再賦值給 b
+  
+  fmt.Println( a + b )
+  
+}
+```
+` go run . `
+預期結果： 顯示 hello world
+
+說明：
+1. 前面忘了介紹 a := "hello" , 這邊我們看到 雙引號 ",  在兩個雙引號內的東西, 會變編譯器識別為字串 string
+2. 寫成是的 = 不是等於的意思, 是 assign, 賦值的意思
+### 2. 新增另一個檔案 calculate.go
+新增一個檔案 calculate.go (可以使用touch指令, 或vscode左邊界面滑鼠直接新增)
+calculate.go
+```go
+package main
+
+func Sub(a int, b int) int {
+  return a - b
+}
+```
+說明：
+1. 我們在同個資料夾內新增了calculate.go, 並且定義了 func Sub(a int, b int) int
+2. 重點注意的是, 我們前面 adder 開頭小寫, 這邊 Sub開頭大寫, 這邊牽涉到物件導向的 public/private觀念, 在golang裡面, 小寫代表private 不希望別人使用, 大寫代表public 開放給人使用, 因此我們定義在不同檔案裡面的function, 要以大寫開頭表示public, 不然程式會無法執行
+
+### 3. 修改 main.go, 呼叫執行 Sub函式
+修改 main.go
+```go
+package main
+
+import (
+  "fmt"
+)
+
+func adder(a int, b int) int {
+  return a + b
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  fmt.Println( adder(3, 5) )
+  fmt.Println( Sub(10, 6))
+}
+```
+
+### 4. 新增資料夾, 以確實了解模組系統
+新增資料夾 pkg
+```bash
+mkdir pkg # mkdir 是 make directory 的意思, 是一個作業系統提供的指令, pkg可以自己更改, 但pkg是package的意思, 通常命名最好讓別人直接看得懂
+```
+將calculate移動到pkg資料夾內 (不熟指令的話也可以先手動)
+```bash
+mv calculate.go pkg # mv 是系統提供的指令, move的意思
+```
+此時的資料夾結構會像是
+```
+helloworld
+  - main.go
+  - pkg
+    - calculate.go 
+```
+接下來修改 calculate.go內模組名稱
+calculage.go
+```go
+package pkg
+
+func Sub(a int, b int) int {
+  return a - b
+}
+```
+說明：這邊模組 package pkg,  pkg可以自訂, 個人是習慣跟資料夾一樣, 這邊沒有強制規定
+
+
+接著修改 main.go: 因為此時 calculate.go 的位置已經改變, 不在main.go的同一層, 所以需要使用模組系統路徑讓編譯器知道位置
+```go
+package main
+
+import (
+  "fmt"
+  "helloworld/pkg" // helloworld 是 mod.go 裡面的專案名稱, 後面pkg就是資料夾路徑
+)
+
+func adder(a int, b int) int {
+  return a + b
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  fmt.Println( adder(3, 5) )
+  fmt.Println( pkg.Sub(10, 6)) // 這邊就需要使用 pkg這個物件去呼叫Sub函式(至於什麼是物件後面詳述)
+}
+```
+執行
+```bash
+go run . 
+```
+之後的預期結果是會看到 4, 如果學習過程有困難歡迎 email我幫忙排除(yale918@gmail.com)
