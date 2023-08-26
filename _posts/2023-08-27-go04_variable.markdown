@@ -6,20 +6,10 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-此篇教變數(variable)的觀念及語法
+講解變數(variable)的觀念及語法
 
-## 解決問題
+## 目的
 使用變數及了解變數
-
-## 小提醒
-此為寫程式的基本觀念
-
-## 筆者環境
-1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
-2. IDE: VScode
-3. 語言: Golang
-
-## Getting Started
 
 ### 1. 目前的 main.go 程式碼
 ```go

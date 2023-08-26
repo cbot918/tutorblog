@@ -6,9 +6,9 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-此篇教函式(function)定義以及呼叫
+講解函式(function)定義以及呼叫
 
-## 解決問題
+## 目的
 了解Golang Function 概念以及使用
 
 ## 小提醒

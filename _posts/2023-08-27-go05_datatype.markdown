@@ -1,23 +1,15 @@
 ---
 layout: post
-title:  (教學) go04_datatype
+title:  (教學) go05_datatype
 date:   2023-08-27 03:00:00 +0800
 image:  02.jpg
 tags:   Tutorial
 ---
 
-此篇教資料型態(type)
+講解資料型態(type)
 
-## 解決問題
+## 目的
 了解資料型態基礎
-
-## 小提醒
-此為寫程式的通用基本觀念, 可以多參考相關教學
-
-## 筆者環境
-1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
-2. IDE: VScode
-3. 語言: Golang
 
 ## Getting Started
 
