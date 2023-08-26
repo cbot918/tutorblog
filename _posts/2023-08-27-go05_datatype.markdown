@@ -1,0 +1,103 @@
+---
+layout: post
+title:  (教學) go04_datatype
+date:   2023-08-27 03:00:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+此篇教資料型態(type)
+
+## 解決問題
+了解資料型態基礎
+
+## 小提醒
+此為寫程式的通用基本觀念, 可以多參考相關教學
+
+## 筆者環境
+1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
+2. IDE: VScode
+3. 語言: Golang
+
+## Getting Started
+
+### 1.介紹資料型態-1
+一般程式語言常用的基本資料型態(還有很多, 先介紹簡單的)
+```go
+// 先認識這三個
+bool 布林值, 就是 0跟1, 也可以用 true, false 來表示
+int  數字, 就是一般的數字
+string 字串, 就是一串字
+
+// 目前還不會用到的
+float64 64位元的小數, 知道就好暫時不會用到他
+byte 一個位元組 // ascii code
+rune 一個位元阻 // unicode 或是常見的 utf8
+```
+解釋：
+1. 布林值就是電腦基本組成, 高電位低電位組成一切, 但我們高階程式語言(未來在詳細說明何謂低階語言高階語言)中, bool就是用來判斷是或否用的, 在判斷式內會大量使用
+2. string其實不算完整的觀念, 應該要搭配另一個觀念叫做 char,  char就是一個字母, 把很多個字母排列在一起就變成string, 但是go沒有char這個型態(c語言有), go是用 byte,跟rune(但這邊會變成有點複雜), 所以我們可以先不用搞懂這些, 我們專注在會使用string就可以了
+ 
+### 2 介紹資料型態-2
+這邊多介紹兩個常用的
+1. 結構 struct
+2. 陣列 array
+```go
+[]int     數字陣列: 就是有很多數字要處理
+[]string  字串陣列: 就是有很多字串要處理
+
+struct 結構體, 可以定義自己的資料型態, 後面程式會大量使用
+```
+說明：
+1. 陣列是一列元素, 從0開始做index
+2. struct 是golang裡面處理json資料結構以及物件導向的基礎, 先聽個印象, 在後面會詳細介紹 json 及 物件導向(OO)
+
+### datatype實戰
+修改 main.go
+```go
+package main
+
+import (
+  "fmt"
+)
+
+var lg = fmt.Println
+
+// 這邊用struct定義一個新的資料類型 User
+type User struct {
+  Name  string
+  Job   string
+  Age   int
+}
+
+func main(){
+  // 以下是陣列的示範
+  nums := []int{3,1,2,5,8}
+  lg( nums )      // 印出整列數字
+  lg( nums[0] )   // 印出 3 
+  lg( nums[3] )   // 印出 5
+  lg( nums[7] )   // 編譯會報錯, 因為沒有第7這個index, 最多只有到4
+
+  
+  // 以下是struct的示範
+  // 宣告了一個 User為資料類型的變數 user1
+  user1 := User{
+    Name: "yale",
+    Job:  "programmer",
+    Age:  "3"
+  }
+  // 另一種宣告方式  
+  // var user1 User
+  // User.Name = "yale"
+  // User.Job = "programmer"
+  // User.Age = 3
+  
+  lg( user1 )       // 印出 user1
+  lg( user1.Name )  // 印出 user1 的 name
+  lg( user1.Job )   // 印出 user1 的 job
+
+}
+```
+
+## 後記
+資料型態目前只做最最最基礎的介紹, 其實還有很多沒講到, 但因為讓學習更滑順一點, 先學平常會用到的就好了！

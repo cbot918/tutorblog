@@ -26,7 +26,7 @@ tags:   Tutorial
 ## 筆者環境
 1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
 2. IDE: VScode
-3. 語言: Golang / js
+3. 語言: Golang
 
 ## Getting Started
 
@@ -109,4 +109,4 @@ go run .
 
 
 ## 後記
-雖然盡量詳細紀錄, 但新手學程式通常會一直遇到問題, 所以歡迎email(yale918@gmail.com)給我, 可以一起討論也可以加加我的工程師line群
+雖然盡量詳細紀錄, 但新手學程式通常會一直遇到問題, 所以歡迎DC找我(yale918#9832)幫debug, 可以一起討論也可以加加我的工程師line群

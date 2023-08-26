@@ -17,7 +17,7 @@ tags:   Tutorial
 ## 筆者環境
 1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
 2. IDE: VScode
-3. 語言: Golang / js
+3. 語言: Golang
 
 ## Getting Started
 
@@ -137,4 +137,4 @@ func main(){
 ```bash
 go run . 
 ```
-之後的預期結果是會看到 4, 如果學習過程有困難歡迎 email我幫忙排除(yale918@gmail.com)
+之後的預期結果是會看到 4, 如果學習過程有困難歡迎DC找我(yale918#9832)幫debug
