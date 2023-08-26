@@ -1,0 +1,120 @@
+---
+layout: post
+title:  (教學) go03_module
+date:   2023-08-27 00:45:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+此篇教函式(function)定義以及呼叫
+
+## 解決問題
+了解Golang Function 概念以及使用
+
+## 小提醒
+會接續上一篇go01_helloworld的程式碼開始講解
+
+## 筆者環境
+1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
+2. IDE: VScode
+3. 語言: Golang / js
+
+## Getting Started
+
+### 1. 目前的程式碼
+```golang
+package main // 告訴編譯器這個檔案這是程式進入點, 一個資料夾內只能有一個main(稍後詳述)
+
+import (   // 引入fmt模組 (format print 就是用來顯示字串的)
+  "fmt"
+)
+
+func main(){  // 程式進入點的函式
+  fmt.Println("hello world") // 印出 hello world
+}
+```
+
+### 2. 增加函式定義sayHello 然後在main裡面呼叫sayHello
+修改 main.go 如下
+```golang
+package main
+
+import (
+  "fmt"
+)
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  sayHello()
+}
+```
+執行程式
+```
+go run .
+```
+預期結果：會看到下面小黑視窗印出 hello world
+
+說明：func sayHello() 的語法是宣告一個叫做sayHello的function, 內容為{}裡面, 目前只有fmt.Println("hello world")而已, 在main裡面, sayHello()的語法是呼叫 sayHello讓他執行, 所以小黑窗會印出 hello world
+
+### 3. 增加函式定義 adder 傳入兩個參數, 相加並列印
+修改 main.go
+```go
+package main
+
+import (
+  "fmt"
+)
+
+func adder(a int, b int) {
+  fmt.Println(a + b)
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  adder(3, 5)
+}
+```
+執行結果：印出8
+
+說明：
+1. 上面程式我們將 sayHello 這個函式呼叫註解掉, 註解掉的程式碼編譯器不會執行(因為之後可以不要註解, 又可以執行了耶嘿)
+2. 呼叫了 adder, 並將 3 跟 5 傳入, 這叫做傳入參數(pass parameter to function), 此處的a跟b又稱為變數(後面會詳細介紹), 後面的int叫做型態(type), int全稱叫做integer(整數), a int 是golang的語法, 有些程式語言是 int a 這樣的方式宣告
+3. 在 上面adder的函式定義裡面, 我們做的事情是, 把傳進來的兩個數字做加法, 接著印出
+
+### 4. 幫 adder 函式增加返回值(return value)
+return值是程式設計裡面很重要的觀念, adder函式的任務是用來計算 a + b, 接著可以透過return值把這個答案帶出去, 因為編譯器會在執行完adder函式之後, 就把adder函式標記起來等著資源回收(畢竟記憶體是寶貴的資源), 所以必須透過 return 關鍵字, 將 a+b的答案紀錄起來, 然後給其他函式用
+```go
+package main
+
+import (
+  "fmt"
+)
+
+func adder(a int, b int) int {
+  return a + b
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  fmt.Println( adder(3, 5) )
+}
+```
+說明： 
+1. adder函式定義變成  func adder(a int, b int) int {}, 後面增加的 int 是返回值, 因為golang是強行別語言, 每有一筆資料變數被宣告, 編譯器都要知道他的型態(type)
+2. reutrn a + b, 對編譯器來說, 會先計算好 a + b 的答案, 然後保存在記憶體的某個位置
+3. fmt.Println( adder(3, 5) ), 這邊呼叫了 adder(3, 5), 會計算出8, 然後 fmt.Println(8)
+
+
+## 後記
+本篇講了函式宣告跟呼叫, 因為這對程式語言來說算很重要的一個語法概念, 後面會不斷重複使用
