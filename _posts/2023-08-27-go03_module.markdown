@@ -6,13 +6,13 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-此篇教函式(function)定義以及呼叫
+此篇教模組(module)的使用方法
 
 ## 解決問題
-了解Golang Function 概念以及使用
+了解如何引入別的檔案裡的函式
 
 ## 小提醒
-會接續上一篇go01_helloworld的程式碼開始講解
+需要對函式宣告及呼叫有基本觀念
 
 ## 筆者環境
 1. Host OS: [Linux Ubuntu 20.04](https://ubuntu.com/download)
@@ -22,75 +22,8 @@ tags:   Tutorial
 ## Getting Started
 
 ### 1. 目前的程式碼
+main.go
 ```golang
-package main // 告訴編譯器這個檔案這是程式進入點, 一個資料夾內只能有一個main(稍後詳述)
-
-import (   // 引入fmt模組 (format print 就是用來顯示字串的)
-  "fmt"
-)
-
-func main(){  // 程式進入點的函式
-  fmt.Println("hello world") // 印出 hello world
-}
-```
-
-### 2. 增加函式定義sayHello 然後在main裡面呼叫sayHello
-修改 main.go 如下
-```golang
-package main
-
-import (
-  "fmt"
-)
-
-func sayHello(){
-  fmt.Println("hello world")
-}
-
-func main(){
-  sayHello()
-}
-```
-執行程式
-```
-go run .
-```
-預期結果：會看到下面小黑視窗印出 hello world
-
-說明：func sayHello() 的語法是宣告一個叫做sayHello的function, 內容為{}裡面, 目前只有fmt.Println("hello world")而已, 在main裡面, sayHello()的語法是呼叫 sayHello讓他執行, 所以小黑窗會印出 hello world
-
-### 3. 增加函式定義 adder 傳入兩個參數, 相加並列印
-修改 main.go
-```go
-package main
-
-import (
-  "fmt"
-)
-
-func adder(a int, b int) {
-  fmt.Println(a + b)
-}
-
-func sayHello(){
-  fmt.Println("hello world")
-}
-
-func main(){
-  // sayHello()
-  adder(3, 5)
-}
-```
-執行結果：印出8
-
-說明：
-1. 上面程式我們將 sayHello 這個函式呼叫註解掉, 註解掉的程式碼編譯器不會執行(因為之後可以不要註解, 又可以執行了耶嘿)
-2. 呼叫了 adder, 並將 3 跟 5 傳入, 這叫做傳入參數(pass parameter to function), 此處的a跟b又稱為變數(後面會詳細介紹), 後面的int叫做型態(type), int全稱叫做integer(整數), a int 是golang的語法, 有些程式語言是 int a 這樣的方式宣告
-3. 在 上面adder的函式定義裡面, 我們做的事情是, 把傳進來的兩個數字做加法, 接著印出
-
-### 4. 幫 adder 函式增加返回值(return value)
-return值是程式設計裡面很重要的觀念, adder函式的任務是用來計算 a + b, 接著可以透過return值把這個答案帶出去, 因為編譯器會在執行完adder函式之後, 就把adder函式標記起來等著資源回收(畢竟記憶體是寶貴的資源), 所以必須透過 return 關鍵字, 將 a+b的答案紀錄起來, 然後給其他函式用
-```go
 package main
 
 import (
@@ -110,11 +43,98 @@ func main(){
   fmt.Println( adder(3, 5) )
 }
 ```
-說明： 
-1. adder函式定義變成  func adder(a int, b int) int {}, 後面增加的 int 是返回值, 因為golang是強行別語言, 每有一筆資料變數被宣告, 編譯器都要知道他的型態(type)
-2. reutrn a + b, 對編譯器來說, 會先計算好 a + b 的答案, 然後保存在記憶體的某個位置
-3. fmt.Println( adder(3, 5) ), 這邊呼叫了 adder(3, 5), 會計算出8, 然後 fmt.Println(8)
+
+### 2. 新增另一個檔案 calculate.go
+新增一個檔案 calculate.go (可以使用touch指令, 或vscode左邊界面滑鼠直接新增)
+calculate.go
+```go
+package main
+
+func Sub(a int, b int) int {
+  return a - b
+}
+```
+說明：
+1. 我們在同個資料夾內新增了calculate.go, 並且定義了 func Sub(a int, b int) int
+2. 重點注意的是, 我們前面 adder 開頭小寫, 這邊 Sub開頭大寫, 這邊牽涉到物件導向的 public/private觀念, 在golang裡面, 小寫代表private 不希望別人使用, 大寫代表public 開放給人使用, 因此我們定義在不同檔案裡面的function, 要以大寫開頭表示public, 不然程式會無法執行
+
+### 3. 修改 main.go, 呼叫執行 Sub函式
+修改 main.go
+```go
+package main
+
+import (
+  "fmt"
+)
+
+func adder(a int, b int) int {
+  return a + b
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  fmt.Println( adder(3, 5) )
+  fmt.Println( Sub(10, 6))
+}
+```
+
+### 4. 新增資料夾, 以確實了解模組系統
+新增資料夾 pkg
+```bash
+mkdir pkg # mkdir 是 make directory 的意思, 是一個作業系統提供的指令, pkg可以自己更改, 但pkg是package的意思, 通常命名最好讓別人直接看得懂
+```
+將calculate移動到pkg資料夾內 (不熟指令的話也可以先手動)
+```bash
+mv calculate.go pkg # mv 是系統提供的指令, move的意思
+```
+此時的資料夾結構會像是
+```
+helloworld
+  - main.go
+  - pkg
+    - calculate.go 
+```
+接下來修改 calculate.go內模組名稱
+calculage.go
+```go
+package pkg
+
+func Sub(a int, b int) int {
+  return a - b
+}
+```
+說明：這邊模組 package pkg,  pkg可以自訂, 個人是習慣跟資料夾一樣, 這邊沒有強制規定
 
 
-## 後記
-本篇講了函式宣告跟呼叫, 因為這對程式語言來說算很重要的一個語法概念, 後面會不斷重複使用
+接著修改 main.go: 因為此時 calculate.go 的位置已經改變, 不在main.go的同一層, 所以需要使用模組系統路徑讓編譯器知道位置
+```go
+package main
+
+import (
+  "fmt"
+  "helloworld/pkg" // helloworld 是 mod.go 裡面的專案名稱, 後面pkg就是資料夾路徑
+)
+
+func adder(a int, b int) int {
+  return a + b
+}
+
+func sayHello(){
+  fmt.Println("hello world")
+}
+
+func main(){
+  // sayHello()
+  fmt.Println( adder(3, 5) )
+  fmt.Println( pkg.Sub(10, 6)) // 這邊就需要使用 pkg這個物件去呼叫Sub函式(至於什麼是物件後面詳述)
+}
+```
+執行
+```bash
+go run . 
+```
+之後的預期結果是會看到 4, 如果學習過程有困難歡迎 email我幫忙排除(yale918@gmail.com)

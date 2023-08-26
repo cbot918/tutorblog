@@ -56,8 +56,8 @@ go version # 預期會看到go的說明跳出來
 開個資料夾, 並用vscode開啟
 ```bash
 # 先開啟一個 terminal 黑視窗
-mkdir -p ~/coding/1_helloworld # 在 ~ 開個 coding資料夾, 裡面再開個1_helloworld資料夾
-cd ~/coding/1_helloworld # 把位置移動到1_helloworld資料夾裡面
+mkdir -p ~/coding/hello world # 在 ~ 開個 coding資料夾, 裡面再開個hello world資料夾
+cd ~/coding/hello world # 把位置移動到hello world資料夾裡面
 code . # code是vscode的執行檔, . 是指說當前資料夾, 所以這個指令是用vscode打開當前資料夾
 # 如果 code . 失敗的話, 表示需要裝一下 code這個東西, 那就另外自己先開啟 vscode, 按住 ctrl+shift+p 打開面板, 輸入 shell code 安裝, 安裝完之後, 就能用code指令了
 ```
