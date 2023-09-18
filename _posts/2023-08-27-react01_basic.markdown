@@ -1,0 +1,59 @@
+---
+layout: post
+title:  (教學) react01_basic
+date:   2023-09-19 01:42:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+防雷：樓主前端程度大概 entry/junior, 如果希望看到更專業的 React 教學, 可以參考其他前端大神的文章
+
+今天我們來學習基本的 React, 那第一個介紹的就是為什麼我會學習 React 當作我前端技能
+
+Pros:
+  1. api比較簡單, 覺得相對好上手 (個人意見)
+  2. 學完有機會可以寫 React Native 做手機開發
+
+Cons:
+  1. 對於沒經驗的工程師, 程式碼一多容易組織凌亂不好維護
+  2. 初階工作少
+  3. 不是特別推薦轉職菜鳥選 React (但也是可行的選項)
+
+
+## Hello World
+0. 預備環境
+- [nodejs](https://nodejs.org/zh-tw/download)
+- npm (通常隨著nodejs安裝好就會在裡面了, 如果沒看到有安裝困難, 歡迎留言或聯絡我幫忙排除)
+
+1. 起專案
+```bash
+npm create vite
+```
+接著會進入互動 terminal
+```bash
+Project name: first-react
+> React
+> JavaScript
+
+cd first-react
+npm install
+npm run dev
+```
+接著瀏覽器輸入 localhost:5173, 就會看到畫面啦！
+
+## React 架構觀念
+React 是一個 render library, 專門負責處理瀏覽器頁面渲染, 是處理畫面的神兵利器, 透過 html / css / javascript, 就能造出非常多變/互動行高的網站, 甚至在 2013年左右(大概時間, 也有可能記錯xD)橫空而出的 SPA(single application page)之後, 網頁從靜態(純html/css), 發展到動態(加上大量js), 再發SPA單頁應用(主要差別是, 程式碼都load到 user的瀏覽器裡面執行, 有別於傳統的在server執行)
+
+簡化了解 React 主要組成
+1. jsx 語法 : 一個可以把 HTML tag 寫在 react 程式碼裡面的東西
+2. react createElement: 將jsx轉換成vdom 
+3. react renderer: 簡化來說大概就是 innerHTML 渲染出來
+4. function component: 一個 react function 代表一個元件, 一個元件裡面最主要包含 元件狀態, api fetch 函式 跟 jsx
+5. [React Router](https://reactrouter.com/en/main/start/tutorial): 做頁面切換的函式庫
+6. [React.useState](https://zh-hant.legacy.reactjs.org/docs/hooks-state.html) : 響應式的狀態變數
+7. [React.useContext](https://react.dev/reference/react/useContext): 在元件之間傳遞資料的變數
+8. [React.useEffect](https://zh-hant.legacy.reactjs.org/docs/hooks-effect.html): 監聽狀態的函式, 功能有點類似 eventListener
+8. [React.useReducer](https://react.dev/reference/react/useReducer): 跨元件傳遞資料的變數, 通常稱 redux
+9. [React.useRef](https://react.dev/reference/react/useRef): 取得元件的 reference, 方便控制
+
+### 今天先這樣好了, 不適合一下太多xD, 其他明天繼續來講
