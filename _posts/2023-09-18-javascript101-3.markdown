@@ -1,0 +1,60 @@
+---
+layout: post
+title:  (教學) javascript 101-3
+date:   2023-09-18 04:43:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+
+其實這兩篇的內容, 筆者都覺得不是一眼就能理解的, 所以筆者常常說：js好難, 是真的覺得不太好學xD
+
+為了可以更好理解 .then到底是什麼, 這邊我們透過練習, 來熟悉一下 FP的函式封裝
+
+```js
+// 定義
+function from( pass ){
+
+  function then(fn){
+    return from(fn( pass ))
+  }
+  
+  return { then }
+
+}
+
+// 呼叫
+from(3)
+  .then(x=>x+1)
+  .then(x=>x*2)
+  .then(console.log)
+```
+
+此函式就是模擬了 fetch.then 的模式, 其中快速理解的關鍵在於, 3 這個數字會被傳到 x=>x+1 處理, 變成4, 接著 4=>4*2 變成8,  也就是 3 一步步變成8,  8最後再傳給 console.log, 印出來
+
+
+### fetch ( http request )
+http fetch 在程式碼中會頻繁使用, 以下簡單做個 fetch 呼叫
+```js
+// 呼叫 localhost:5000/regist_name
+fetch("http://localhost:5000/regist_name",
+  // 帶了一個物件, 這邊設定 method, headers, body
+  {
+    method:"post", // post 用在把資料放在 body 裡面, 資料傳輸用
+    headers:{
+        "Content-Type":"application/json" // 設定為 json 格式
+    },
+    body:JSON.stringify( { "name":name } ) // 放在 body 的資料, 需要呼叫 JSON.stringify 把物件格式轉成字串格式
+  }
+)
+.then(res=>res.json())  // 這邊處理回應回來的階段, 將 res 做 json的解析(假設伺服器回應也是 json)
+.then(data=>{           // 解析完的 data 印出來
+  console.log(data)
+})
+.catch(err=>{           // 如果有錯誤, 就會跳到這邊把 err 印出來
+  console.log(err)
+})
+```
+
+
+更多參考：[Promise.then是如何實現鏈式調用的](https://juejin.cn/post/6883121706123132936)

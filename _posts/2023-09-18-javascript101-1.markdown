@@ -1,0 +1,83 @@
+---
+layout: post
+title:  (教學) javascript 101-1
+date:   2023-09-18 04:43:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+javascript 是一個歷史悠久的語言, 一開始只是為了能夠在瀏覽器端支持動態的功能 (任何能動起來的, 包括跑馬燈, 可以點的按鈕, 可以動態改變頁面資料...等等等等太多講不完), 後來隨著個人電腦萌芽後開始迅猛發展, 搜尋引擎橫空出世 (yahoo), 越來越多大型軟體公司服務出現, 大概直到 Google搜尋/Gmail 的出現, 一鎚定音向全世界宣告瀏覽器就是科技生活的必需品, javascript顯然成為程式語言中的一個最有特色的存在 (畢竟是網頁唯一指定語言), 在科技如此發達的現代, 學會 javascript 幾乎是無法失業的代名詞, 今天就讓我們來一虧 javascript 的神奇魅力吧！
+
+
+### 變數宣告
+```js
+// const 是不可改變的變數宣告
+const a = "A"
+console.log(a)
+// A
+
+// let 是可改變的變數宣告
+let b = "B"
+b = "BB"
+console.log(b)
+// BB
+```
+
+js 的變數宣告有三種, var let const,  var 是舊語法現在會避免使用
+
+### 函式定義及呼叫
+```js
+function Hi(){
+  return "Hi"
+}
+
+const Hello = ( name ) => {
+  return "Hello " + name
+}
+
+```
+
+兩種函式宣告方式效果會有微微不同, 但平常一般使用情況感覺不出來, 因此一般場景當成相同來使用
+
+### 判斷式
+跟一般程式語言相同, 本文先省略 請參考 [MDN](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Statements/if...else)
+
+### 迴圈 
+```js
+// 此為一般標準迴圈
+for(let i=0; i < 100; i++) {
+  console.log(i)
+}
+// 印出 1 ~ 100
+
+const n = 10
+let x = 0
+while (x < n) {
+  console.log(x)
+  x += 1
+}
+// 印出 1 ~ 10
+```
+
+### 迭代器
+[Array.prototype.forEach()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
+```js
+const ids = [1,2,3,4,5,6,7,8,9,10]
+
+ids.forEach((e) => {
+  console.log(element)
+})
+// 1 ~ 10
+```
+
+[Array.prototype.map()](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+```js
+let ids = [1,2,3,4,5,6,7,8,9,10]
+
+const fixed_ids = ids.map( (x) => x * 2 )
+
+console.log(fixed_ids)
+// 2~11
+```
+
+map 比較特別, 需要遵照他的語法格式, 因為此函式的意思是將 array A 映射到 array B, 是一個很好用的函式

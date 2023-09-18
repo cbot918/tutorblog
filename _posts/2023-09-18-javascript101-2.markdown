@@ -1,0 +1,88 @@
+---
+layout: post
+title:  (教學) javascript 101-2
+date:   2023-09-18 04:43:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+開心的時間過去啦, 來面對其實不是很好學的 javascript 部份, 以下用 nodejs 來解釋比較容易
+### 非同步引擎 non-blocking
+js 是單執行緒非同步程式語言, 背後有兩個關鍵組件：
+1. [V8 js engine](https://v8.dev/) 
+2. 事件循環EventLoop(由[libuv](https://libuv.org/)向上實作而成)
+
+單執行緒跟非同步可以合在一起看(因為就是這兩個東西得配合起來), 這樣設計就得回溯到[歷史](https://www.youtube.com/watch?v=M3BM9TB-8yA), 當初在 web 高速發展時期, 有很多網頁伺服器 (server) 的需求, 但是 nodejs 開發者 Ryan Dahl 發現, 市面上沒有一個高I/O的解決方案, 就是如果網站同時很多人訪問, 就會卡頓, 因此他就挽起袖子自己來寫一個. 要高I/O就代表不希望每個連線之間互相會等待(blocking), 首先得調整作業系統的I/O模式(non-blocking 或是 asynchrnous). 接著就需要一個 eventloop 來接住這些如潮水般湧進來的網路請求, 配合 callback function, promise 等等 非同步的程式設計撰寫方式, 造就了 js 這個以單執行緒非阻塞的高I/O特性, 現今全世界就有很多由 js 設計良好的併發能力的網頁伺服器. 
+
+除了 nodejs 之外, 高併發最知名的兩個軟體 就是 [Nginx](https://github.com/nginx) 以及 [Redis](https://github.com/redis/redis)
+
+上面為什麼要用 nodejs 來講述 javascript 的非同步原理,  因為瀏覽器的機制跟 nodejs 差不多. 
+
+我們可以用簡單的 http 呼叫來想像非同步引擎會怎麼處理他, 如果今天我在家裡打開網頁想瀏覽美國的網站, 我會送出一個 GET http 呼叫到對方的伺服器上, 封包從我家到中華電信, 到美國的電信, 再到當地的機房, 再到伺服器的機房, 再到電腦上, 然後原路返回, 這一整個路程就算電的傳輸速度很快, 也還是會需要反應時間 (我們可以想像假設一個http request出去到回來要5分鐘).
+
+如果網頁 js 是同步程式, 亦即前一行程式碼沒執行完就會卡住, 直到返回之後才執行下一行, 那顯然需要卡5分鐘, 等封包回來, 才能進行下一行. 但聰明的工程師, 發明了 multi process 跟 multi thread 來解決不希望被卡住的這個問題, 但另一個問題又來了, 如果我們是瀏覽器本器, 我去調度作業系統的 thread 適合嗎？更何況如果可以調度到, 那依照使用者使用瀏覽器會頻繁有 http request 的情況來說, 那資源消耗會非常大, 一堆 thread 為了處理 http request, context switch 來 switch 去的, 顯然不是好的設計, 所以個人認為一開始 js 被設計成 單執行緒非同步, 還是很符合使用情境的！
+
+
+所以話說回來, 非同步程式設計, 就是程式引擎沒在等人, 從程式碼的第一行衝衝衝衝衝衝到最後一行 (所以nodejs效率好), 但如果遇到上述的 http 呼叫, 封包都還在半路, 但程式碼已經全部執行完了怎麼辦？所以相對就有了「掛起」的機制, 只要沒有馬上執行返回, 需要等的函式(setInterval, promise, fetch 等等...), 都會被掛起, 等回應回來的時候, 再放到queue裡面, 依序再被放到 call stack裡面執行. 
+
+所以回頭想想, 這樣的設計簡直太聰明了, 誰也不用等誰, 反正最後返回來的結果, 不會被 miss 掉, 就OK啦！
+
+
+
+### promise 及 async await
+
+#### promise 語法
+```js
+let myFirstPromise = new Promise((resolve, reject) => {
+  // 當非同步作業成功時，呼叫 resolve(...),而失敗時則呼叫 reject(...)。
+  // 在這個例子中，使用 setTimeout(...) 來模擬非同步程式碼。
+  // 在實務中，您將可能使用像是 XHR 或者一個 HTML5 API.
+  setTimeout(function () {
+    resolve("Success!"); // Yay！非常順利！
+  }, 250);
+});
+
+```
+setTimeout 的功能是定時器, 有點類似其他程式語言的 sleep, 是瀏覽器提供的API. 上面例子在停了 250 之後, 會resolve成功 (這邊可以先簡單認識這種設計哲學, 就是每一個promise任務, 最後都會返回成功或失敗, 其實也很符合 http 呼叫返回的使用情境). 那因為 setTimeout 只是負責暫停時間, 但因為會變非同步事件被掛起, 所以我們需要一個 Promise來處理, 最明顯就是中間resolve, reject函式, 就是由 promise 提供的物件可以得之一二.  
+
+以上就簡單介紹 promise, 應該離能了解的程度還相差甚遠, 不過希望就原理情境介紹, 讀者可依照這些概念, 再去搜尋相關教材研讀, 相信可以很快就能有進一步的收穫的！
+
+#### FP 基礎
+
+以下這段如果覺得一時難以理解, 個人覺得正常(自己花了很多時間才理解xD), 且確實沒有重要到非得很熟. 但過一遍看個印象還是可以, 對於後面的 async/await 理解還是很有幫助. 
+
+介紹 async/await 之前, 筆者想補充個 js FP 的小概念(因為js語法中有不少fp的屬性)
+
+() 這是一個 expression,  expression 加上 () 就是呼叫
+
+最簡單的就是 ()(), 這樣就是定義了一個 expression 然後呼叫, 即時呼叫又有另一個稱呼 [IIFE](https://developer.mozilla.org/zh-TW/docs/Glossary/IIFE)(Immediately Invoked Function Expression).
+
+以下做點簡單練習
+```js
+// 這樣就是定義了一個x為傳入參數的函式, 函式只做印出x+1, 我們呼叫並傳入3
+((x)=>{console.log(x+1)})(3)
+
+```
+
+我們再推進一步, ()()(), 執行順序會是從右到左, 例如說 (x=>x+2)(x=>x+1)(3),  我們希望傳入3, 然後把 3+1 變4, 然後再 4+2, 語法正確得這樣寫 
+```js
+(x=>x+2)((x=>x+1)(3))
+// 印出6
+```
+
+#### async/await 語法
+async/await 就是為了解決 promise 帶來的程式碼很「巢」不易閱讀, 的一個解決方案, 或者另一種說法, 就是希望將程式碼變成 blocking style (程式行一行一行會等, 開發上比較容易), 但實務上要不要使用 async await, 應該也還是by開發的人以及團隊/專案狀況自行考量.
+
+使用 await 關鍵字有以下前題: 需要所在函式前面有 async 關鍵字
+
+```js
+
+( async ()=>{
+  let res = await fetch("https://google.com")
+  let json = await res.json()
+  console.log(json)
+})()
+// 程式碼會 block住等 fetch 回來才執行下一行
+```
+以上程式碼示範 async/await用法, 也推薦讀者再去找更多練習熟悉一下
+
