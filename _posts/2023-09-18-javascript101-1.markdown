@@ -79,5 +79,6 @@ const fixed_ids = ids.map( (x) => x * 2 )
 console.log(fixed_ids)
 // 2~11
 ```
-
 map 比較特別, 需要遵照他的語法格式, 因為此函式的意思是將 array A 映射到 array B, 是一個很好用的函式
+
+
