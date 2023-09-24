@@ -6,7 +6,7 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-防雷：樓主前端程度大概 entry/junior, 如果希望看到更專業的 React 教學, 可以參考其他前端大神的文章
+防雷：樓主前端程度只有 entry/junior, 如果希望看到更專業的 React 教學, 可以參考其他前端大神的文章
 
 今天我們來學習基本的 React, 那第一個介紹的就是為什麼我會學習 React 當作我前端技能(相對於Vue來說)
 
