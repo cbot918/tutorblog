@@ -1,0 +1,179 @@
+---
+layout: post
+title:  (教學) javascript 101-4
+date:   2023-09-18 04:43:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+## 今天來分享一下 dom wrapper 以及 virtual dom!
+
+dom wrapper 是以 (個人理解)
+1. document.createElement 決定 dom type ( div, span, input 之類的)
+2. document.querySelector 抓取 dom 
+3. document.setAttribute 設定 dom屬性 ( classname, style 之類的) 
+4. document.innerHTML 指定 element 內籤的 HTML
+5. element.appendChild 將 某個 dom 加入 dom tree 裡
+6. element.addEventListener 將某個 element 加入事件監聽隊列裡
+
+也就是說, 網頁渲染, 主要依賴以上5個函式
+
+</br>
+
+## 簡單的 input 及 view ( [codepen](https://codepen.io/yale918/pen/abPqpBL) )
+
+程式碼
+
+index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>js native </title>
+</head>
+<body>
+  <script src="main.js"></script>
+</body>
+</html>
+
+```
+
+main.js
+```js
+window.onload = () =>{
+  // 把 html element 先一次宣告好
+  let body = document.querySelector("body")
+  let inputText = document.createElement("input")
+  let view = document.createElement("div")
+
+  // setup inputText
+  body.appendChild(inputText) // 將 inputText 掛到 body 下面
+  inputText.setAttribute("type","text") // 為了輸入文字, 設定為 text 類型
+  inputText.setAttribute("placeholder","input text") // 給個預設文字友善使用者
+  inputText.addEventListener("keydown",(e)=>{   // 註冊事件監聽器, keydown 為鍵盤壓下的時候
+    if( e.key === "Enter"){                     // 捕捉 Enter 按鍵
+      let temp = document.createElement("div")  // 每一個輸入的文字 用個 div 去渲染
+      temp.innerHTML = e.target.value           // 把 div 加上文字, e.target.value 就是使用者輸入
+      view.appendChild( temp )                  // 將 temp 加入 view
+      e.target.value = ""                       // 將 輸入框的文字清掉, 讓使用者輸入下一個
+    }
+  })
+  inputText.setAttribute("style","margin-bottom:10px")  // 這邊做個 css 設定
+
+  // setup view
+  body.appendChild(view)  // 將 view 加入 body下面
+}
+```
+
+</br>
+
+## 什麼是 Virtual Dom
+
+virtual dom 就是 把一個 html tag 拆成 3部份
+```html
+<div class="header" style="color:red"> Hello World</div>
+```
+解說:
+```js
+tag: div
+props: class="header" style="color:red", 這邊可以用物件去處裡
+Hello World: child
+```
+主要以上三個結構(其實省略了 onclick 的事件監聽, 但是複雜度會變高, 故簡單實做先省略)
+
+react renderer 分為三個主要部份 ( 先省略render 裡面的優化演算法 fiber 等等 )
+1. jsx: 先省略跳過, 不太好實作, 雖然有一個最簡單的, 但複雜且覺得不用在這邊敘述
+2. redner: 把 createElement 出來的 react element 渲染出來, 主要就是依照 tag, props, child 這三個去渲染, child 的部份有巢狀結構, 會遞迴渲染
+3. createElement: 定義了 tag, props, child 這樣的 資料結構
+
+</br>
+
+## 來一個極簡的 render 跟 createElement 
+
+[codepen](https://codepen.io/yale918/pen/LYMQxzr)
+reacty.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=\, initial-scale=1.0">
+  <title>reacty</title>
+</head>
+<body>
+
+  <div id="root"></div>
+
+
+  <script>
+    window.onload = ()=>{
+
+      const Reacty = {
+        createElement,
+        render
+      }
+
+      const root = document.querySelector("#root")
+
+      Reacty.render(
+        Reacty.createElement("div", { style:"font-weight:medium" }, 
+          Reacty.createElement("div", {style:"font-size:20px;color:red"},"hello"),
+          Reacty.createElement("div", {style:"font-size:15px;color:gray"}, "this is yale"),
+          "coding is fun"
+        ),
+        root
+      )
+  
+
+      function createElement(type, props, ...children){
+        return {
+          type,
+          props: {
+            ...props,
+            children: children.map((child) =>
+              typeof child === "object" ? child : createTextElement(child)
+            )
+          }
+        }
+      }
+
+      function createTextElement(text) {
+        return {
+          type: "TEXT_ELEMENT",
+          props: {
+            nodeValue: text,
+            children: []
+          }
+        }
+      }
+
+      function render(element, container){
+        const dom =
+          element.type == "TEXT_ELEMENT"
+            ? document.createTextNode("")
+            : document.createElement(element.type)
+        const isProperty = (key) => key !== "children"
+        Object.keys(element.props)
+          .filter(isProperty)
+          .forEach((name)=>{
+            dom[name] = element.props[name]
+          })
+
+        element.props.children.forEach((child)=>render(child, dom))
+        container.appendChild(dom)
+      }
+
+    }
+
+  </script>
+</body>
+</html>
+```
+
+參考資料：
+[build your own react](https://pomb.us/build-your-own-react/)
+
+後記：
+註解要寫的好多, 改天再補好了, 參考資料個人是跟前半段, 後半段fiber比較複雜, 躺平xD

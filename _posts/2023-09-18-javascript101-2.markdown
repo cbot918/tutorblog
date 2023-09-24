@@ -6,7 +6,7 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-開心的時間過去啦, 來面對其實不是很好學的 javascript 部份, 以下用 nodejs 來解釋比較容易
+今天來介紹個人覺得 js 基礎但不一定好理解的部份, 以下用 nodejs 來解釋比較容易
 ### 非同步引擎 non-blocking
 js 是單執行緒非同步程式語言, 背後有兩個關鍵組件：
 1. [V8 js engine](https://v8.dev/) 
