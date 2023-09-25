@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  (教學) react01_react_component
+title:  (教學) react02_component
 date:   2023-09-19 04:43:00 +0800
 image:  02.jpg
 tags:   Tutorial
