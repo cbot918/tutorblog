@@ -132,9 +132,8 @@ docker commit
 ```bash
 docker run -d -p 9000:9000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 ```
-這樣子, 瀏覽 localhost:9000, 就可以看到主空台的頁面了！
+這樣子, 瀏覽 localhost:9000, 就可以看到主控台的頁面了！
 
 <br/>
 
 ### [其他平台安裝頁面](https://docs.portainer.io/start/install-ce/server/docker) ( 除了 docker 安裝也還有其他方式, 參考連結的左邊 sidebar )
-https://docs.portainer.io/start/install-ce/server/docker
