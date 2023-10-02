@@ -1,177 +1,60 @@
 ---
 layout: post
-title:  (教學) golang-http
-date:   2023-10-1 21:48:00 +0800
+title:  (教學) router-group 和 middleware
+date:   2023-10-1 21:49:00 +0800
 image:  02.jpg
 tags:   Tutorial
 ---
 
-今天接著介紹 Golang 非常強大的 std lib: HTTP
+今天接著介紹, groupRouter 以及 middleware, 筆者用一個 註冊跟驗證的 PO文系統, 來解釋一下 group router 跟 middleware
 
-我們直接上 code
+假設我們目前有 /signup, /signin 兩隻 api 負責使用者註冊以及登入. 在登入後我們會在後端生成 jwt token 回傳給前端！
 
-1. hello http
+接著使用者會呼叫 /allpost 去撈出所有的PO文, 然後使用者會使用 /post 去做 PO 文的動作 ,這時候 /post 就需要做驗證！
+
+小弟業界經驗不多, 純粹按照運作邏輯來規劃, 如果有講得不夠完善的再請前輩不吝指點！
+
+## 上 code
+### main.go
 ```go
-package main
-
-import (
-	"fmt"
-	"net/http"
-)
-
-const port = ":8887"
-
-func main() {
-
-  // 定義了路由, 然後處理函式
-	http.HandleFunc("/hello", Hello)
-
-  // 先印個提示訊息
-	fmt.Println("listening: " + port)
-	// 監聽 port :8887, 第二個參數可以自訂更詳細的 http 處理函式, 為了簡化先不詳述
-  http.ListenAndServe(port, nil)
-}
-
-func Hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "hello world")
-}
-```
-可以打開 curl `curl localhost:8887/hello`, 做個簡單測試, go 要起個簡單的 http server 就是如此容易
-
-以上小試身手一下, 接著我們實務一點的情況去處理
-
-
-2. basic http
-```go
-package main
-
-import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
-)
-
-const port = ":8887"
-
-func main() {
-
-	// 這邊我們改模擬個 login api
-	http.HandleFunc("/login", Login)
-
-	// 示範怎麼快速把靜態檔案提供出去
-	http.Handle("/", http.FileServer(http.Dir("public")))
-
-	fmt.Println("listening: " + port)
-	// 這邊做個錯誤捕捉, 有時候自己port被佔到不自知, 有錯誤訊息就比較省時間
-	err := http.ListenAndServe(port, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-// 習慣上會先用個 struct 起來接資料
-type userParam struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func Login(w http.ResponseWriter, r *http.Request) {
-
-	// 由於內建沒有捕捉 method, 我們自己寫
-	if r.Method != "POST" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "method not allowed")
-		return
-	}
-
-	// 這邊開始解析 body資料, 個人是滿喜歡 json decode/encode 這種方式
-	user := userParam{}
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "data error, please try again")
-		return
-	}
-	// 這邊 log 出來看, 資料實際有接收到
-	fmt.Printf("%+v", user)
-
-	// 這邊設定個 headers
-	w.Header().Set("Content-Type", "application/json")
-	// 這邊把 w 拿去做 encoder, 資料就會直接出去了
-	err = json.NewEncoder(w).Encode(user)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "json encode failed")
-		return
-	}
-
-}
-
-```
-第二種我們做了更多示範, 有提供靜態檔案, 有把 post body 資料擷取下來, 並且用 json 回傳, 寫起來舒服因為不用依賴太多東西, 但寫久了還是想偷懶怎辦, 請參考第三種 
-
-
-3. [fiber](https://github.com/gofiber/fiber) http
-```go
-package main
-
-import (
-	"fmt"
-	"log"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-)
-
 func main() {
 	app := fiber.New()
 
-  // 封裝好的各式中間件, 我們就不需要自己寫了！ 
-	app.Use(cors.New())    // cors allow *
-	app.Use(logger.New())  // logger middleware
-	app.Use(recover.New()) // recover middleware
+  // 這是之前就有的處理 cors 的 middleware
+  // 其實 allow cors 自己手寫不難, 之後篇幅有空的話再講解一下
+	app.Use(cors.New())
+  // logger 負責把打進來的 request 都做個 log 在螢幕上
+	app.Use(logger.New())
+  // recover 是當 server panic 的時候會自動恢復
+	app.Use(recover.New())
 
-  // 最大的好處, 直接 serve 出來就是 SPA 了, 方便！
-	app.Static("/", "public")
+  // 登入跟註冊不用另外加
+	app.Post("/signup", Signup)
+	app.Post("/signin", Signin)
 
-	app.Get("/hello", Hello)
+  // 這邊做一個 router group, 從 /api 進來的路徑, 都會經過 RequireAuth 這個 middleware, 定義寫在 middleware.go 裡面
+	api := app.Group("/api", RequireAuth())
+	api.Post("/post", Postt)
 
-  // 有 method 分類可以用了！
-	app.Post("/login", Login)
-
-	if err := app.Listen(":8887"); err != nil {
+	if err := app.Listen(port); err != nil {
 		log.Fatal(err)
 	}
 }
-
-func Hello(c *fiber.Ctx) error {
-	return c.SendString("Hello, World 👋!")
-}
-
-type userParam struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func Login(c *fiber.Ctx) error {
-	user := &userParam{}
-  // body parser 也是簡簡單單
-	err := c.BodyParser(user)
-	if err != nil {
-		return c.Status(422).SendString("data error")
-	}
-
-	fmt.Printf("%+v", user)
-
-  // 很舒服的就送回去了
-	return c.JSON(user)
-}
-
 ```
 
-
-推薦進階閱讀：
-[7天用Go从零实现Web框架Gee教程](https://geektutu.com/post/gee.html)
+新增一個 middleware.go的檔案
+### middleware.go
+middleware 也是一個 fiber.Handler, 只不過會有個 call c.Next()的動作, c.Next()之後會執行哪些動作, 資料結構是紀錄在 router group 裡面(go 的實作, 其他語言可能不一樣)
+```go
+func RequireAuth() fiber.Handler {
+  return func(c *fiber.Ctx) error {
+		token := c.Get("Authorization")
+		_, err := DecodeJWT(token)
+		if err != nil {
+			fmt.Println("422 in here")
+			return c.Status(422).JSON(fiber.Map{"message": "token is invalid, please check your token"})
+		}
+		return c.Next()
+	}
+}
+```
