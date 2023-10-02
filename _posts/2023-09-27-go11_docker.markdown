@@ -19,8 +19,12 @@ docker 是一個把作業系統隔離出 process 可以獨立運行的環境, �
 
 所以我們可以運行多個 ubuntu container 在我們的電腦上, 同理, 我們也可以運行多個 mysql, postgresql, mongodb, 只要有人提供某個程式 images 檔案, 我們就能透過 docker run 的指令運行, 這樣真的非常方便！
 
+<br/>
+
 ## 基本指令
 docker 實務上在看東西的時候, 常常會搭判 grep 來使用, 例如 docker ps | grep mysql,  這樣就會列出包含 mysql 字段的 container
+
+<br/>
 
 ### 常用的 list 指令
 ```bash
@@ -28,6 +32,9 @@ docker images # 列出 docker images
 docker ps # 列出執行中的 docker container 
 docker ps -a # 列出全部的 docker
 ```
+
+<br/>
+
 ### 執行 container 的指令 (以 psql 為例)
 
 ```bash
@@ -40,6 +47,8 @@ docker run -it -p 5432:5432 --name mypostgres -e POSTGRES_PASSWORD=12345 -e POST
 # -e 是提供環境變數, 官方的 docker hub 頁面可以看有哪些環境變數可以用
 # 最後面的 postgres 就是 postgres image
 ```
+
+<br/>
 
 ### 想進入 mypostgres container 後再進入 psql shell 裡面
 為了簡化提供簡單的方式
@@ -54,6 +63,8 @@ psql -U postgres -W
 # \l 是看 databases
 ```
 
+<br/>
+
 ### 刪除 container 跟 image
 ```bash
 docker stop mypostgres
@@ -63,6 +74,9 @@ docker container rm mypostgres
 docker image rm postgres
 # 刪除 image 須把相關的 container 都移除掉
 ```
+
+<br/>
+
 ### 小番外 透過 script 快速操作 docker  
 可以將以下 script 加入 .bashrc, 然後 source ~/.bashrc 一下, 就能用這四個函式了
 註解內示範指令用法
@@ -92,11 +106,14 @@ dshba(){
 }
 ```
 
+<br/>
+
 ### 想要從 container 包 image (筆者比較少用, 提供指令請稍微自己研究一下, 炸)
 ```bash
 docker commit
 ```
 
+<br/>
 
 ## Docker Web GUI  推薦: [Portainer](https://www.portainer.io/)
 
@@ -108,12 +125,16 @@ docker commit
 
 缺點：如果要監控 K8S cluster, 免費版目前還沒測試成功(付費應該滿簡單的)
 
+<br/>
+
 ### Install (這邊以 docker linux 做示範)
 備註：官方是開 8000 port 出來, 但不知道為什麼我在 ubuntu 上面需要用 9000 port
 ```bash
 docker run -d -p 9000:9000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 ```
 這樣子, 瀏覽 localhost:9000, 就可以看到主空台的頁面了！
+
+<br/>
 
 ### [其他平台安裝頁面](https://docs.portainer.io/start/install-ce/server/docker) ( 除了 docker 安裝也還有其他方式, 參考連結的左邊 sidebar )
 https://docs.portainer.io/start/install-ce/server/docker
