@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  (教學) jwt-token
+title:  (教學) jwt frontend
 date:   2023-10-1 21:48:00 +0800
 image:  02.jpg
 tags:   Tutorial
