@@ -1,3 +1,11 @@
+---
+layout: post
+title:  (教學) go01 function
+date:   2023-08-26 23:12:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
 ### 函式呼叫
 
 ### 1. 目前的程式碼
