@@ -6,4 +6,4 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-還沒寫xD
+容許偷懶跳過一下下, 後面補上xD
