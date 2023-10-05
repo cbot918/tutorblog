@@ -13,6 +13,8 @@ tags:   Tutorial
 - [sqlc install](https://docs.sqlc.dev/en/latest/overview/install.html)
 - [start with psql](https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html)
 
+### [程式碼](https://github.com/cbot918/ithelp/tree/main/go-junior-30/db/5_sqlc)
+
 ## Install
 
 我是用 `go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest`, 直接做安裝, 也可以選擇其他的安裝方式
