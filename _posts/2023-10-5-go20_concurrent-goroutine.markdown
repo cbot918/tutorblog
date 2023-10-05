@@ -8,7 +8,7 @@ tags:   Tutorial
 
 延續[上一篇的程式碼](https://github.com/cbot918/ithelp/tree/main/go-junior-30/db/5_sqlc)今天要來CRUD了, 意思是說要搭上 HTTP API 實作功能了, 順便實作一下簡單的三層式架構以及讀入環境變數吧, 可能份量會比較重, 可以多練習幾遍唷！
 
-### [程式碼](https://github.com/cbot918/ithelp/tree/main/go-junior-30/db/6_crud)
+### [程式碼]()
 
 ## Getting Started
 
