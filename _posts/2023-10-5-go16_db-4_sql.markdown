@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  (教學) DB - sql crud
+title:  (教學) DB - sql
 date:   2023-10-6 01:51:00 +0800
 image:  02.jpg
 tags:   Tutorial

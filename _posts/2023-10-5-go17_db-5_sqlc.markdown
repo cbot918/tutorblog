@@ -1,0 +1,193 @@
+---
+layout: post
+title:  (教學) DB - sqlc
+date:   2023-10-6 03:00:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+上一篇我們用 go 內建的 sql pkg 來封裝 CRUD functions (結果 UD難產, 覺得太麻煩了), 我們這篇來使用 sqlc 套件, 來幫我們把 query 轉成我們需要的 types 以及 functons, 可以省下很多肝！
+
+連結：
+- [sqlc](https://github.com/sqlc-dev/sqlc)
+- [sqlc install](https://docs.sqlc.dev/en/latest/overview/install.html)
+- [start with psql](https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html)
+
+## Install
+
+我是用 `go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest`, 直接做安裝, 也可以選擇其他的安裝方式
+
+sqlc指令看一下, 有東西跑出來就ok
+
+## Getting Started
+
+### setup config
+這邊我們要借助一下前天 [3_migration](https://github.com/cbot918/ithelp/tree/main/go-junior-30/db/3_migration) 的code, 因為會需要 ec.sql 的 schema ( Makefile也可以順便借用 ), sqlc 藉由這個 schema 幫我們生成 types struct, 真的省非常多肝！
+
+目前我們的資料夾結構長這樣 (要記得 go mod init 唷), 且 ec.up 跟 ec.down 裡面是有 schema 的
+```
+- db
+  - migrations
+    - 000001_ec.up.sql
+    - 000001_ec.down.sql
+- Makefile
+- main.go
+- go.mod
+```
+
+我們查一下 [sqlc 的文件](https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#) (覺得寫得非常好), 他需要先創建一個 sqlc.yaml, 然後稍微修改成我們的版本
+
+sqlc.yaml
+```yaml
+version: "2"
+sql:
+  - engine: "postgresql" 
+    queries: db/query       # 我們會把 sql query 寫在這邊
+    schema: "db/migrations" # 這是我們的 schema 位置
+    gen:
+      go:
+        package: "db"       # gen 出來的 function 的 package name
+        out: "db/sqlc"      # gen 出來的 code 放的位置
+```
+
+這時候可以迫不及待 `sqlc generate` 試試看, 但他會說, 我們沒有寫 query, 確實, 這樣人家當然不能 gen
+
+### Writing Query
+建立 db/query 資料夾, 裡面加入 ec.sql 空白檔案, 然後去瀏覽器把 sqlc doc 往下捲一下, 有個範例程式碼, 複製起來, 貼到 ec.sql, 然後改成我們的
+
+ec.sql
+```sql
+-- name: GetUser :one
+SELECT * FROM users
+WHERE id = $1 LIMIT 1;
+
+-- name: ListUsers :many
+SELECT * FROM users
+ORDER BY name;
+
+-- name: CreateUser :one
+INSERT INTO users (
+  name, email, password, discount
+) VALUES (
+  $1, $2, $3, $4
+)
+RETURNING *;
+
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = $1;
+```
+
+好, 已經改成我們的了, 接下來 `sqlc generate`, 神奇的事發生了, 多了
+
+```
+- sqlc
+  - db.go
+  - ec.sql.go
+  - models.go
+```
+
+說明：
+- db.go: 這邊看一下這個類別的定義
+- ec.sql.go: function 定義在這邊
+- models.go: 就是依據我們 schema, 產生出來的資料結構, 可以直接使用 
+
+### CRUD Time
+main.go
+```go
+
+package main
+
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
+
+	db "5/db/sqlc"
+
+	_ "github.com/lib/pq"
+)
+
+const (
+	driver = "postgres"
+	dsn    = "postgres://postgres:12345@localhost:5435/blog?sslmode=disable"
+)
+
+func main() {
+
+  // 先創建 conn
+	conn, err := newConn(driver, dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+  // 使用 sqlc 提供的 constructor, 他會回傳 query物件, 命名為 q
+	q := db.New(conn)
+
+	user := db.CreateUserParams{
+		Name:     "sqlctest",
+		Email:    "sqlctest@gmail.com",
+		Password: "12345",
+		Discount: 0.7,
+	}
+
+  // q 直接可以呼叫他幫我們產的 CreateUser, 固定傳一個 context.Background 給他
+  // 後面就是要新增的資料, 這個 db.CreateUserParams 也是他準備好的, 簡直太棒啦！
+	result, err := q.CreateUser(context.Background(), user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	printJson(result)
+
+  // 先去 GUI撈了一下, 有 12使用者, 這邊就 搜尋 12號使用者測試看看他的函式
+	u, err := q.GetUser(context.Background(), 12)
+	if err != nil {
+		log.Fatal(err)
+	}
+	printJson(u)
+
+  // 刪除 12號使用者
+	err = q.DeleteUser(context.Background(), 12)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+  // 列出全部的使用者, 剛剛我們自己寫得要死, 他這邊封一個又好用又方便
+	users, err := q.ListUsers(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	printJson(users)
+
+}
+
+// create connection
+func newConn(driver string, dsn string) (*sql.DB, error) {
+	conn, err := sql.Open(driver, dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	err = conn.Ping()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("postgres good")
+	return conn, nil
+}
+
+// 封個 printJson 好了
+func printJson(v any) {
+	json, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		fmt.Println("json marshal failed")
+	}
+	fmt.Println(string(json))
+}
+
+```
+
+後記：為什麼 sqlc 是 type safe 呢？因為 sqlc 根據我們 migrations資料夾提供的 schema, 去產生對應的正確的 go 資料型別 ( postgres官方會定義他們的資料型別以及各語言的對應 ), 避免了人為定義而犯錯! 非常棒的函式庫, 快速開發就靠他了！ 
