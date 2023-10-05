@@ -20,11 +20,11 @@ tags:   Tutorial
 docker run -it --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=test postgres
 ```
 參數解說:
--it: 持續運行
---name: 指定 containe_name
--p: 把 container 內的5432 bind 到 local 的 5432 (又稱作把port開出來, 讓我們可以直接連線)
--e POSTGRES_PASSWORD:  設定密碼, 需要有密碼才能連線
--e POSTGRES_DB=test: 創建一個 test db (方便)
+- -it: 持續運行
+- --name: 指定 containe_name
+- -p: 把 container 內的5432 bind 到 local 的 5432 (又稱作把port開出來, 讓我們可以直接連線)
+- -e POSTGRES_PASSWORD:  設定密碼, 需要有密碼才能連線
+- -e POSTGRES_DB=test: 創建一個 test db (方便)
 
 ## cli 去看一下 instance
 ```bash
