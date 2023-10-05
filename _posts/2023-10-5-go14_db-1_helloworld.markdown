@@ -13,9 +13,6 @@ tags:   Tutorial
 3. sql
 4. sqlc
 5. crud ( 以 ec service 為例 )
-6. simple ui
-6. wal
-7. db backup
 
 ### [程式碼](https://github.com/cbot918/ithelp/blob/main/go-junior-30/db/connect-instance/main.go)
 
