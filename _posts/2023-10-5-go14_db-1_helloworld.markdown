@@ -1,12 +1,20 @@
 ---
 layout: post
-title:  (教學) DB - 起instance 及 連線
+title:  (教學) DB - helloworld
 date:   2023-10-2 21:48:00 +0800
 image:  02.jpg
 tags:   Tutorial
 ---
 
-開始介紹 database, 大概會有4篇( go用 db 比較麻煩一點點 )
+開始介紹 database, 重點項目篇幅比較多
+1. hello world
+2. schema
+3. migration
+3. sql
+4. sqlc
+5. crud ( 以 ec service 為例 )
+6. wal
+7. db backup
 
 ### [程式碼](https://github.com/cbot918/ithelp/blob/main/go-junior-30/db/connect-instance/main.go)
 
