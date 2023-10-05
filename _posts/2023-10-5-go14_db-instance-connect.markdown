@@ -10,7 +10,7 @@ tags:   Tutorial
 
 ### [程式碼](https://github.com/cbot918/ithelp/blob/main/go-junior-30/db/connect-instance/main.go)
 
-### 快速連結:
+### 用到的連結:
 1. [postgres docker](https://hub.docker.com/_/postgres)
 2. [go postgres driver](https://github.com/lib/pq)
 3. [go sql package](https://pkg.go.dev/database/sql)
