@@ -6,12 +6,15 @@ image:  02.jpg
 tags:   Tutorial
 ---
 
-開始介紹 database
+開始介紹 database, 大概會有4篇( go用 db 比較麻煩一點點 )
 
-快速連結:
+[程式碼](https://github.com/cbot918/ithelp/blob/main/go-junior-30/db/connect-instance/main.go)
+
+### 快速連結:
 1. [postgres docker](https://hub.docker.com/_/postgres)
 2. [go postgres driver](https://github.com/lib/pq)
 3. [go sql package](https://pkg.go.dev/database/sql)
+
 ## 起 instance
 ```bash
 docker run -it --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=test postgres
@@ -84,7 +87,9 @@ func main() {
 ## DB GUI
 
 這邊推薦 
+
 DBMS: [DBeaver](https://dbeaver.io/download/) 
+
 SQLEditor: [Beekeeper CE](https://github.com/beekeeper-studio/beekeeper-studio)
 
 DBeaver 是全免費開源的資料庫管理工具, 功能全面, 支援的資料庫非常多 (冷門的 cockroachdb 或是最近想用 cassandra 也都有辦法使用)
