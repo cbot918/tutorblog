@@ -25,12 +25,12 @@ tags:   Tutorial
 
 ## 起 instance
 ```bash
-docker run -it --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=test postgres
+docker run -it --name postgres -p 5435:5435 -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=test postgres
 ```
 參數解說:
 - -it: 持續運行
 - --name: 指定 containe_name
-- -p: 把 container 內的5432 bind 到 local 的 5432 (又稱作把port開出來, 讓我們可以直接連線)
+- -p: 把 container 內的5435 bind 到 local 的 5435 (又稱作把port開出來, 讓我們可以直接連線)
 - -e POSTGRES_PASSWORD:  設定密碼, 需要有密碼才能連線
 - -e POSTGRES_DB=test: 創建一個 test db (方便)
 
@@ -61,9 +61,9 @@ import (
 // user: postgres
 // password: 12345
 // host: localhost
-// port: 5432
+// port: 5435
 // db: test
-const dsn = "postgresql://postgres:12345@localhost:5432/test?sslmode=disable"
+const dsn = "postgresql://postgres:12345@localhost:5435/test?sslmode=disable"
 
 func main() {
 	db, err := sql.Open("postgres", dsn)
