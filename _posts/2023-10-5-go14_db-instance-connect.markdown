@@ -8,7 +8,7 @@ tags:   Tutorial
 
 開始介紹 database, 大概會有4篇( go用 db 比較麻煩一點點 )
 
-[程式碼](https://github.com/cbot918/ithelp/blob/main/go-junior-30/db/connect-instance/main.go)
+### [程式碼](https://github.com/cbot918/ithelp/blob/main/go-junior-30/db/connect-instance/main.go)
 
 ### 快速連結:
 1. [postgres docker](https://hub.docker.com/_/postgres)
