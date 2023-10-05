@@ -8,12 +8,14 @@ tags:   Tutorial
 
 接下去的章節
 
-concurrent-goroutine
-concurrent-GPM-CSP
-network-tcp
-network-ws1
-network-ws2
-chat1
-chat2
-chat3
-chat4
+concurrency1
+concurrency2
+concurrency3
+concurrency4
+concurrency5
+concurrency6
+concurrency7
+
+references:
+  [chapter8](https://xingdl2007.gitbooks.io/gopl-soljutions/content/chapter-8-goroutines-and-channels.html)
+  [Concurrency in Go](https://www.udemy.com/course/concurrency-in-go-golang/learn/lecture/22057652?start=0#overview)
