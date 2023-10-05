@@ -1,0 +1,207 @@
+---
+layout: post
+title:  (教學) DB - sql crud
+date:   2023-10-6 01:51:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+這篇介紹簡單的 sql crud, 因為筆者資料庫能力有限, 目前處於專案能動就好, 用得到再查QQ, 以下簡單介紹一下 sql crud
+
+## [程式碼](https://github.com/cbot918/ithelp/tree/main/go-junior-30/db/4_sql)
+
+CRUD
+1. Create:  insert data
+2. Read:  select data 
+3. Update: update data
+4. Delete: delete data
+
+直接上 sql 來看看比較快, 我們對我們的 users table 做點事, 直接用 SQL Editor 對我們的資料庫做以下操作
+
+### SQL Query 的部份
+
+query.sql
+```sql
+-- Create
+INSERT INTO users(name, email, password, discount) VALUES ('yale','yale@gmail.com', '12345', 1);
+INSERT INTO users(name, email, password, discount) VALUES ('node','node@gmail.com', '12345', 0.9);
+INSERT INTO users(name, email, password, discount) VALUES ('hi','hi@gmail.com', '12345', 0.85);
+INSERT INTO users(name, email, password, discount) VALUES ('delete','delete@gmail.com', '12345', 0.1);
+
+-- Read
+SELECT * FROM users;
+
+-- Update
+-- 這邊是前面 insert 進來的時候, 還沒有會員, 後來開通會員, 所以要做個 Update 優惠比例的修改
+UPDATE users SET discount = 0.85 WHERE name='hi';
+
+-- Delete
+-- 把測試帳號 row 砍掉
+DELETE FROM users WHERE name = 'delete';
+
+-- Read
+-- 再看一下結果, 應該會照預期顯示
+SELECT * FROM users;
+```
+
+sql 語法提供一些地方參考, 目前太菜無法太多分享, 等熟悉一點再來開篇教學
+1. [W3S sql tutorial](https://www.w3schools.com/sql/)
+2. [online sql](https://www.programiz.com/sql/online-compiler/)
+
+
+### Golang code 的部份
+
+接下來是 golang 的部份, 根據我們的 sql 去封裝一下 CRUD 函式
+
+程式碼不少先說一下結構
+1. 封一個 newConn 函式 做 sql.Open 就是建立連線池 ( go std建立就是連線池, 省去找套件的麻煩)
+2. 封一個類別 Storage, 包含一個 NewStorage (這是工廠模式, 也是 go 在做類別很常使用的方式), data member 有個 Conn
+3. 封 Create 跟 Read 函式進來, 後面不繼續做, 因為這樣慢慢做真的太累, 下一個章節會分享自己使用的 sqlc 套件
+
+main.go
+```go
+package main
+
+import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
+
+	_ "github.com/lib/pq"
+)
+
+const (
+	driver = "postgres"
+	dsn    = "postgres://postgres:12345@localhost:5435/blog?sslmode=disable"
+)
+
+func main() {
+
+  // new conn 的部份
+	conn, err := newConn(driver, dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+  // new一個我們的 Storage 類別, 這邊功能就是 constructor
+  // conn從這邊傳進去也有解藕程式碼的效果
+	s := NewStorage(conn)
+
+  /* 這邊準備 User 的資料, 要來 CreateUser 了 */
+	u := &User{
+		Name:     "test",
+		Email:    "test@gmail.com",
+		Password: "12345",
+		Discount: 0.5,
+	}
+
+	result, err := s.CreateUser(u)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result)
+  /* CreateUser 結束, 印個 result */
+
+
+  /* 這邊是 ReadUser */
+	users, err := s.ReadUser()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+  // go 比較麻煩處理印出資料, 要排版的話就需要 MarshalIndent, 但真的是易讀多了
+	json, err := json.MarshalIndent(users, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(json)) // 印記得加個 string, 不然會是 byte 的形式
+  /*  ReadUser 結束 */
+
+}
+
+// create connection
+func newConn(driver string, dsn string) (*sql.DB, error) {
+	conn, err := sql.Open(driver, dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	err = conn.Ping()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("postgres good")
+	return conn, nil
+}
+
+// types
+type User struct {
+	Id       int
+	Name     string
+	Email    string
+	Password string
+	Discount float32
+}
+
+// CRUD functions
+type Storage struct {
+	Conn *sql.DB
+}
+
+func NewStorage(conn *sql.DB) *Storage {
+	return &Storage{Conn: conn}
+}
+
+func (s *Storage) CreateUser(u *User) (sql.Result, error) {
+
+  // 難得的使用了 `` 這個來跨住字串
+	query := `INSERT INTO users(name, email, password, discount) VALUES ($1, $2, $3, $4);`
+
+	result, err := s.Conn.Exec(query, u.Name, u.Email, u.Password, u.Discount)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *Storage) ReadUser() ([]*User, error) {
+
+  // 小提醒, select * 是效能不好的作法, 這邊純粹簡單分享不考慮效能問題
+	query := `select * from users`
+
+	rows, err := s.Conn.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close() // 記得 rows 要關閉掉, defer的意思是說, 此函式結束前一刻要執行
+
+	users := []*User{}
+
+  // 這邊麻煩吧, 我也覺得麻煩QQ
+  // 但是熟悉一下不吃虧, 總會遇到需要原生去操作的時候
+	for rows.Next() {
+		user := &User{}
+    // 這邊 user.Id前面要記得加個 &, 因為是 pass by reference, 比較容易忘記提醒個
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Discount)
+		if err != nil {
+      // 這邊使用 sql.ErrNoRows 的常數, 來判斷沒有這個 row 資料
+			if err == sql.ErrNoRows {
+				return nil, err
+			}
+			return nil, err
+		}
+
+    // 這是 go 的陣列操作(通常是叫 slice), 把 user 加入 到 users 裡面
+		users = append(users, user)
+
+	}
+
+	return users, nil
+}
+
+```
+
+## 後記：
+才封裝了 CreateUser 跟 ReadUser 就要寫這麼多程式了, 實在麻煩, 所以聰明的工程師就做了各種 database wrapper, 像是 sqlx, gorm 等等等等,  自己本身是喜歡 sqlc 的方式, 下一篇會介紹!
