@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  (教學) DB - API CRUD
+title:  (教學) concurrency1
 date:   2023-10-6 04:00:00 +0800
 image:  02.jpg
 tags:   Tutorial
@@ -12,9 +12,9 @@ concurrency1
 concurrency2
 concurrency3
 concurrency4
-concurrency5
-concurrency6
-concurrency7
+gotest1
+gotest2
+gotest3
 
 references:
   [chapter8](https://xingdl2007.gitbooks.io/gopl-soljutions/content/chapter-8-goroutines-and-channels.html)
