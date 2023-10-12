@@ -8,7 +8,7 @@ tags:   Tutorial
 
 最近自己也在做 cli tool, 熟悉了 cobra 發現算是好用(沒有其他語言做cli比較), 但自己體驗還不錯！來分享一下
 
-
+### [程式碼](https://github.com/cbot918/ithelp/tree/main/go-junior-30/clii)
 
 ## Install
 這邊用 go install 安裝
