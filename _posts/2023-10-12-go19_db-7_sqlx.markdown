@@ -1,0 +1,109 @@
+---
+layout: post
+title:  (教學) DB - SQLx
+date:   2023-10-12 04:00:00 +0800
+image:  02.jpg
+tags:   Tutorial
+---
+
+今天想插播一下 go 的 sqlx package, 雖然前面介紹過 sqlc 了, 但 sqlc 的使用方式是 code gen dao(data access object), 一般專案情況下好用, 但有時候我們想快速操作簡單操作一下資料庫, sqlx 是一個很好的選擇, 而且剛好昨天在看一個工程師分享, 他覺得 sqlx 很好用, 就讓我有點動機來分享一下, 也算是 golang 常用的 pkg之一
+
+## 連結
+- [sqlc github](https://github.com/sqlc-dev/sqlc)
+
+sqlc 是類似 內建的 sql package, 多完善了一些功能, 但其中我個人覺得差滿多的是以下範例
+
+模擬情境, 有個 user table, 我們將資料撈出來, bind到我們的 User struct 上面
+
+sqlx 有個很好用的功能, 例如宣告一個陣列 `users := []user{}`,  然後 
+```go
+db.Select(&users, "select * from users")
+```
+這樣 users 裡面就有資料了, 比原生好用不少！特別推薦
+
+### [程式碼](https://github.com/cbot918/ithelp/tree/main/go-junior-30/sqlx)
+
+sql 
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq" // PostgreSQL driver
+)
+
+// define User struct
+type User struct {
+	ID       int    `db:"id"`
+	Name     string `db:"name"`
+	Email    string `db:"email"`
+	Password string `db:"password"`
+}
+
+func main() {
+
+	var err error
+
+	// load .env
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// connect db
+	connStr := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+	db, err := sqlx.Connect("postgres", connStr)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// ping db
+	err = db.Ping()
+	if err != nil {
+		fmt.Println("ping failed")
+		return
+	}
+	fmt.Println("ping success")
+
+	// Insert a user
+	newUser := User{
+		Name:     "John Doe",
+		Email:    "johndoe@example.com",
+		Password: "password123",
+	}
+	insertUserSQL := "INSERT INTO users (name, email, password) VALUES (:name, :email, :password) RETURNING id"
+	_, err = db.NamedExec(insertUserSQL, newUser)
+	if err != nil {
+		panic(err)
+	}
+
+	// select a user
+	u := []User{}
+	q := "SELECT * FROM users ORDER BY id DESC LIMIT 1"
+	err = db.Select(&u, q)
+	if err != nil {
+		log.Fatal(err)
+	}
+	printJSON(u)
+
+}
+
+func printJSON(v any) {
+	json, _ := json.MarshalIndent(v, "", "  ")
+	fmt.Println(string(json))
+}
+
+
+```
